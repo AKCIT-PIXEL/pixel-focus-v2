@@ -33,6 +33,7 @@ const pt = {
       gallery: 'Antes e depois',
       changes: 'Nossas mudanças',
       models: 'Modelos',
+      planes: 'Planos',
       ocr: 'OCR',
       credits: 'Método',
     },
@@ -165,6 +166,21 @@ const pt = {
     pickerHint: 'Alvo real × modelo (cada um no seu melhor K):',
     sweepTitle: 'Varredura de K por modelo',
   },
+  planes: {
+    title: 'Mesma foto, foco em vários planos',
+    lead: `A mesma foto refocada no fundo, no meio e na frente da cena, com dois níveis de desfoque (K = 20 e 40). Usamos o pipeline
+      do demo do GenFocus (DeblurNet → DepthPro → mapa de CoC → BokehNet, 28 passos, mesmas seeds); só muda o BokehNet.
+      Quatro fotos são os exemplos do GenFocus e seis são da validação do EBB!.`,
+    photos: 'Fotos',
+    focus: 'Foco',
+    resolution: 'Resolução',
+    aif: 'Imagem toda em foco (DeblurNet)',
+    coc: 'Mapa de CoC (claro = mais desfoque)',
+    openFull: 'Abrir a imagem em tamanho original',
+    planeName: (q: string) => ({ '0.04': 'fundo', '0.50': 'meio', '0.96': 'frente' } as Record<string, string>)[q] || q,
+    modelLabel: (m: string) => ({ v2_fase2: 'Modelo 2 (v2-fase2)', fase1: 'fase1', corrigida: 'corrigida' } as Record<string, string>)[m] || m,
+    caption: (plane: string, k: string, side: string) => `Foco no ${plane} · K = ${k} · lado maior de ${side} px. Clique numa imagem para abrir no tamanho original.`,
+  },
   ocr: {
     title: 'Texto legível de novo',
     body: 'Texto desfocado no fundo, a saída do DeblurNet e o que um OCR consegue ler antes e depois.',
@@ -223,6 +239,7 @@ const en: typeof pt = {
       gallery: 'Before and after',
       changes: 'Our changes',
       models: 'Models',
+      planes: 'Planes',
       ocr: 'OCR',
       credits: 'Method',
     },
@@ -353,6 +370,21 @@ const en: typeof pt = {
     sceneN: (n, dataset) => `Scene ${n} · ${dataset}`,
     pickerHint: 'Ground truth vs. model (each at its best K):',
     sweepTitle: 'K sweep per model',
+  },
+  planes: {
+    title: 'Same photo, focus on several planes',
+    lead: `The same photo refocused on the background, middle and foreground of the scene, at two blur levels (K = 20 and 40). We use the
+      GenFocus demo pipeline (DeblurNet → DepthPro → CoC map → BokehNet, 28 steps, same seeds); only BokehNet changes.
+      Four photos are the GenFocus examples and six come from the EBB! validation set.`,
+    photos: 'Photos',
+    focus: 'Focus',
+    resolution: 'Resolution',
+    aif: 'All-in-focus image (DeblurNet)',
+    coc: 'CoC map (brighter = more blur)',
+    openFull: 'Open the full-size image',
+    planeName: (q) => ({ '0.04': 'background', '0.50': 'middle', '0.96': 'foreground' } as Record<string, string>)[q] || q,
+    modelLabel: (m) => ({ v2_fase2: 'Model 2 (v2-fase2)', fase1: 'fase1', corrigida: 'corrigida' } as Record<string, string>)[m] || m,
+    caption: (plane, k, side) => `Focus on the ${plane} · K = ${k} · ${side} px long side. Click an image to open it at full size.`,
   },
   ocr: {
     title: 'Making blurry text readable again',

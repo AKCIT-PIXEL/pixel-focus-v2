@@ -1,0 +1,136 @@
+---
+import { t, toLang } from '../lib/i18n';
+
+const s = t(toLang(Astro.currentLocale));
+---
+
+<!-- 6. Mesma foto, foco em vários planos -->
+<section class="wrap py-8" id="planes">
+  <h2 class="section-title">{s.planes.title}</h2>
+  <div class="section-lead sm:text-justify sm:hyphens-auto">
+    <p set:html={s.planes.lead} />
+  </div>
+  <div id="planes-widget">
+    <p class="text-center text-muted">{s.common.loading}</p>
+  </div>
+</section>
+
+<script>
+  import { el } from '../lib/dom';
+  import { asset } from '../lib/asset';
+  import { fetchJSON } from '../lib/data';
+  import { createCaseButtons, showNoData } from '../lib/widgets';
+  import { t, langFromDocument } from '../lib/i18n';
+
+  const s = t(langFromDocument());
+  const ROOT = asset('planes/');
+
+  // Gerado fora do site (static/planes/manifest.json); o official foi retirado na cópia.
+  interface PlanesManifest {
+    fotos: string[];
+    modelos: string[];
+    quantis: string[];
+    ks: string[];
+    lados: string[];
+  }
+
+  // Exemplos do GenFocus na mesma ordem das seções de pipeline e refocagem; depois os do EBB!.
+  const PHOTO_ORDER = ['group_1', 'kid', '0', 'cello'];
+  function sortPhotos(photos: string[]): string[] {
+    const rank = (p: string) => (PHOTO_ORDER.includes(p) ? PHOTO_ORDER.indexOf(p) : PHOTO_ORDER.length);
+    return [...photos].sort((a, b) => rank(a) - rank(b) || a.localeCompare(b));
+  }
+
+  function card(title: string) {
+    const img = el('img', { alt: title, loading: 'lazy', decoding: 'async' });
+    const link = el('a', { target: '_blank', rel: 'noopener', title: s.planes.openFull }, [img]);
+    const root = el('figure', { class: 'sweep-card m-0' }, [el('figcaption', { class: 'sweep-title', text: title }), link]);
+    return {
+      root,
+      set(src: string, alt?: string) {
+        img.src = src;
+        link.href = src;
+        if (alt) img.alt = alt;
+      },
+    };
+  }
+
+  function init(container: HTMLElement, m: PlanesManifest): void {
+    const photos = sortPhotos(m.fotos);
+    const state = {
+      photo: photos[0],
+      q: m.quantis.includes('0.50') ? '0.50' : m.quantis[0],
+      k: m.ks[m.ks.length - 1],
+      side: m.lados[0],
+    };
+
+    const aif = card(s.planes.aif);
+    const coc = card(s.planes.coc);
+    const models = m.modelos.map((name) => ({ name, card: card(s.planes.modelLabel(name)) }));
+    const caption = el('p', { class: 'figure-caption', 'aria-live': 'polite' });
+
+    function render(): void {
+      const base = `${ROOT}${state.side}/${state.photo}/`;
+      const plane = s.planes.planeName(state.q);
+      aif.set(`${base}aif.jpg`);
+      coc.set(`${base}coc_q${state.q}_k${state.k}.jpg`);
+      models.forEach(({ name, card }) => card.set(`${base}${name}/q${state.q}_k${state.k}.jpg`));
+      caption.textContent = s.planes.caption(plane, state.k, state.side);
+    }
+
+    // Miniaturas das fotos (versão de 512 px da imagem toda em foco).
+    const thumbs = el('div', { class: 'planes-thumbs', role: 'group', 'aria-label': s.planes.photos });
+    const thumbButtons = photos.map((photo, i) => {
+      const button = el('button', { type: 'button', class: 'planes-thumb', 'aria-label': s.common.photoN(i + 1), 'aria-pressed': 'false' }, [
+        el('img', { src: `${ROOT}512/${photo}/aif.jpg`, alt: '', loading: 'lazy', decoding: 'async' }),
+      ]);
+      button.addEventListener('click', () => {
+        state.photo = photo;
+        syncThumbs();
+        render();
+      });
+      thumbs.append(button);
+      return button;
+    });
+    function syncThumbs(): void {
+      thumbButtons.forEach((b, i) => {
+        const on = photos[i] === state.photo;
+        b.classList.toggle('is-selected', on);
+        b.setAttribute('aria-pressed', String(on));
+      });
+    }
+
+    function control(label: string, values: string[], key: 'q' | 'k' | 'side', text: (v: string) => string) {
+      const group = createCaseButtons(values.map(text), (i) => {
+        state[key] = values[i];
+        render();
+      }, Math.max(0, values.indexOf(state[key])));
+      group.root.setAttribute('aria-label', label);
+      return el('div', { class: 'planes-control' }, [el('span', { class: 'text-xs text-muted', text: label }), group.root]);
+    }
+
+    container.replaceChildren(
+      thumbs,
+      el('div', { class: 'planes-controls' }, [
+        control(s.planes.focus, m.quantis, 'q', s.planes.planeName),
+        control('K', m.ks, 'k', (v) => v),
+        control(s.planes.resolution, m.lados, 'side', (v) => `${v} px`),
+      ]),
+      el('div', { class: 'grid gap-4 sm:grid-cols-2' }, [aif.root, coc.root]),
+      el('div', { class: 'mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3' }, models.map((x) => x.card.root)),
+      caption,
+    );
+    syncThumbs();
+    render();
+  }
+
+  const container = document.getElementById('planes-widget');
+  if (container) {
+    fetchJSON<PlanesManifest>(`${ROOT}manifest.json`).then(
+      (m) => {
+        if (!m.fotos?.length || !m.modelos?.length) throw new Error('planes/manifest.json is empty');
+        init(container, m);
+      },
+    ).catch((err) => showNoData(container, err));
+  }
+</script>

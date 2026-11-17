@@ -4,7 +4,7 @@ import { t, toLang, LOCALES } from '../lib/i18n';
 
 const lang = toLang(Astro.currentLocale);
 const s = t(lang);
-const links = (['pipeline', 'refocus', 'upload', 'gallery', 'changes', 'models', 'ocr', 'credits'] as const).map((id) => ({ id, label: s.nav.links[id] }));
+const links = (['pipeline', 'refocus', 'upload', 'gallery', 'changes', 'models', 'planes', 'ocr', 'credits'] as const).map((id) => ({ id, label: s.nav.links[id] }));
 // Seletor de idioma: os dois sempre visíveis; o outro idioma aponta para a mesma página nele.
 const langs = (['en', 'pt'] as const).map((code) => ({
   code,
@@ -17,7 +17,7 @@ const langs = (['en', 'pt'] as const).map((code) => ({
 <nav class="section-nav sticky top-0 z-30 border-b border-[#ededed] bg-white/92 backdrop-blur-md" aria-label={s.nav.label}>
   <div class="mx-auto flex h-(--nav-h) max-w-[960px] items-center gap-4 px-2 sm:px-4">
     <a class="hidden whitespace-nowrap font-display font-semibold text-ink no-underline hover:no-underline md:block" href="#top">Pixel Focus</a>
-    <div class="section-nav-links flex min-w-0 flex-1 gap-1 overflow-x-auto md:ml-auto md:flex-none">
+    <div class="section-nav-links flex min-w-0 flex-1 gap-1 overflow-x-auto md:ml-auto">
       {
         links.map((link) => (
           <a
