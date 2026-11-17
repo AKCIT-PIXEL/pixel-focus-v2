@@ -21,7 +21,7 @@ function firstRefocusPhoto(): string {
 // Arquivos e quadro BokehNet saem do meta.json da foto, como no cliente.
 const photo = { name: firstRefocusPhoto() };
 const meta: RefocusMeta = JSON.parse(readFileSync(join(process.cwd(), 'static/refocus', photo.name, 'meta.json'), 'utf8'));
-// Modelo do quadro BokehNet: o primeiro da ordem de exibição (v2-fase2) com os quadros completos
+// Modelo do quadro BokehNet: o primeiro da ordem de exibição (Modelo 1, synth-2gpu) com os quadros completos
 // nessa foto; se ele faltar, cai no próximo. Sem nenhum modelo completo, o build falha.
 const DIAGRAM_MODEL = sortModels(meta.models.filter((m) => m.complete).map((m) => m.name))[0];
 if (!DIAGRAM_MODEL) throw new Error(`static/refocus/${photo.name}/meta.json has no complete model`);

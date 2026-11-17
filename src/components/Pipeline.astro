@@ -35,6 +35,7 @@ const s = t(toLang(Astro.currentLocale));
     let item = items[0];
     let step = 0;
     let timer: number | null = null;
+    let autoOn = false;
     // Paralaxe da etapa DepthPro: criada só quando a seção chega perto da tela.
     let parallax: Parallax | null = null;
 
@@ -85,8 +86,28 @@ const s = t(toLang(Astro.currentLocale));
     }
 
     function stopAuto(): void {
-      if (timer) clearInterval(timer);
+      autoOn = false;
+      if (timer) clearTimeout(timer);
       timer = null;
+    }
+
+    // Tempo de cada etapa no avanço automático. Na DepthPro, a imagem 2.5D colorida só aparece depois que
+    // as texturas carregam; a contagem começa quando ela está pronta, para não piscar e sumir.
+    const STEP_MS = 4000;
+    const DEPTH_MS = 7000;
+    function schedule(): void {
+      if (!autoOn) return;
+      const isDepth = steps()[step].label === 'DepthPro';
+      if (isDepth && parallax && !parallax.isReady()) {
+        timer = window.setTimeout(schedule, 100);
+        return;
+      }
+      timer = window.setTimeout(() => {
+        if (!autoOn) return;
+        if (parallax?.isDragging()) return schedule();
+        go(step + 1);
+        schedule();
+      }, isDepth ? DEPTH_MS : STEP_MS);
     }
 
     const photoButtons = createCaseButtons(items.map((_, i) => s.common.photoN(i + 1)), (i) => {
@@ -97,9 +118,8 @@ const s = t(toLang(Astro.currentLocale));
     container.replaceChildren(photoButtons.root, stepButtons.root, stage.root, caption);
     // Sem avanço automático para quem pede menos movimento; nem durante o arraste da paralaxe.
     if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      timer = window.setInterval(() => {
-        if (!parallax?.isDragging()) go(step + 1);
-      }, 2200);
+      autoOn = true;
+      schedule();
     }
 
     // Contexto WebGL só perto da tela; fora dela a animação pausa. Sem WebGL, fica o mapa estático.

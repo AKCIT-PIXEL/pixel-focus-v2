@@ -41,6 +41,8 @@ export interface Parallax {
   /** Seção perto da tela; fora dela a animação pausa. */
   setVisible(visible: boolean): void;
   isDragging(): boolean;
+  /** Texturas da foto atual carregadas (a imagem 2.5D colorida pode aparecer). */
+  isReady(): boolean;
 }
 
 function loadImage(src: string): Promise<HTMLImageElement> {
@@ -241,5 +243,6 @@ export function createParallax(): Parallax | null {
       kick();
     },
     isDragging: () => dragging,
+    isReady: () => ready && !lost,
   };
 }

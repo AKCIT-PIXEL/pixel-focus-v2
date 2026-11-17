@@ -2,23 +2,20 @@
 import { t, langFromDocument, localeTag } from './i18n';
 import { el } from './dom';
 
-// Ordem de exibição dos modelos: o nosso (v2-fase2) primeiro e o dos pesos do artigo por último.
-// Os manifestos em static/ listam os modelos em outra ordem; a página reordena com sortModels.
-export const MODEL_ORDER = ['v2-fase2', 'synth-2gpu', 'official'];
+// Modelos exibidos, na ordem: Modelo 1 (synth-2gpu) e Modelo 2 (v2-fase2).
+// Os manifestos em static/ também listam o official; a página o descarta com sortModels.
+export const MODEL_ORDER = ['synth-2gpu', 'v2-fase2'];
 
-// Ordena pela MODEL_ORDER; modelos desconhecidos vão para o fim, na ordem original.
+// Filtra e ordena pela MODEL_ORDER; modelos fora dela (ex.: official) não aparecem.
 export function sortModels(models: string[]): string[] {
-  const rank = (m: string): number => {
-    const i = MODEL_ORDER.indexOf(m);
-    return i < 0 ? MODEL_ORDER.length : i;
-  };
-  return [...models].sort((a, b) => rank(a) - rank(b));
+  return MODEL_ORDER.filter((m) => models.includes(m));
 }
 
 // Só usado nos scripts de cliente: o idioma vem do <html lang>.
 // Rótulos exibidos: renomear um modelo é mudar só aqui.
 function modelLabels(): Record<string, string> {
-  return { official: t(langFromDocument()).common.officialModel };
+  const common = t(langFromDocument()).common;
+  return { 'synth-2gpu': common.model1, 'v2-fase2': common.model2 };
 }
 
 const DATASET_LABELS: Record<string, string> = { mvlf: 'MVLF', epfl: 'EPFL', zedd: 'ZEDD' };

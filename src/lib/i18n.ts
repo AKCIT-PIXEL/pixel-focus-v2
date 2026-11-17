@@ -21,7 +21,8 @@ const pt = {
     beforeAfter: 'Comparação antes e depois',
     caseN: (n: number) => `Caso ${n}`,
     photoN: (n: number) => `Foto ${n}`,
-    officialModel: 'official (artigo)',
+    model1: 'Modelo 1',
+    model2: 'Modelo 2',
   },
   nav: {
     label: 'Seções da página',
@@ -74,7 +75,7 @@ const pt = {
   refocus: {
     title: 'Refocagem interativa',
     lead: 'Clique na foto para escolher o plano de foco. O controle deslizante muda a intensidade do desfoque (K).',
-    leadModels: 'A página abre no v2-fase2, o nosso modelo; o official (pesos originais do artigo) fica para comparação. Todos recebem o mesmo K, mas respondem de forma diferente: nos nossos modelos o desfoque é mais contido que no official.',
+    leadModels: 'Escolha entre o Modelo 1 e o Modelo 2, os dois treinados pela equipe. Ambos recebem o mesmo K, mas respondem de forma diferente.',
     placeholder: 'A refocagem por clique aparece aqui em breve.',
     stage: 'Foto refocada',
     hint: 'Clique para focar',
@@ -118,19 +119,18 @@ const pt = {
     steps: [
       {
         title: 'Replicamos',
-        body: `Rodamos o pipeline original do GenFocus (DeblurNet → DepthPro → BokehNet) com os pesos do artigo, o checkpoint
-        <code>official</code>.`,
+        body: `Rodamos o pipeline original do GenFocus (DeblurNet → DepthPro → BokehNet) com os pesos do artigo.`,
       },
       {
         title: 'Modificamos',
         body: `Corrigimos a escala de K: os benchmarks publicam K como diâmetro do círculo de confusão, e o BokehNet é condicionado pelo raio.
-        No protocolo novo, usado para avaliar o <code>v2-fase2</code>, as imagens têm lado maior de 1024 px (o <code>official</code> e
-        o <code>synth-2gpu</code> foram avaliados no protocolo anterior, a 544 px). Treinamos o BokehNet com dados sintéticos (<code>synth-2gpu</code>) e fizemos
-        um ajuste fino em uma segunda fase (<code>v2-fase2</code>).`,
+        No protocolo novo, usado para avaliar o <b>Modelo 2</b>, as imagens têm lado maior de 1024 px (o <b>Modelo 1</b>
+        foi avaliado no protocolo anterior, a 544 px). Treinamos o BokehNet com dados sintéticos (<b>Modelo 1</b>) e fizemos
+        um ajuste fino em uma segunda fase (<b>Modelo 2</b>).`,
       },
       {
         title: 'Resultado',
-        body: `O <code>v2-fase2</code> é o nosso modelo principal. Veja os três checkpoints lado a lado na
+        body: `O <b>Modelo 2</b> é o nosso modelo principal. Veja os dois modelos lado a lado na
         <a href="#models">comparação dos modelos</a>.`,
       },
     ],
@@ -148,10 +148,9 @@ const pt = {
   },
   models: {
     title: 'Comparação dos modelos BokehNet',
-    lead: `A mesma cena nos três checkpoints: <code>v2-fase2</code> e <code>synth-2gpu</code> (nossos) e <code>official</code>
-      (pesos do artigo, para comparação). Cada modelo abre no K que melhor reproduz o alvo real e tem o próprio controle de K.`,
-    note: `Os modelos foram avaliados em protocolos diferentes: <code>official</code> e <code>synth-2gpu</code> a 544 px com grade de 8 valores
-      de K, e <code>v2-fase2</code> a 1024 px com grade de 9. Por isso cada controle usa a grade do seu modelo, rotulada em relação ao K de
+    lead: `A mesma cena nos dois modelos da equipe, <b>Modelo 1</b> e <b>Modelo 2</b>. Cada modelo abre no K que melhor reproduz o alvo real e tem o próprio controle de K.`,
+    note: `Os modelos foram avaliados em protocolos diferentes: o Modelo 1 a 544 px com grade de 8 valores
+      de K, e o Modelo 2 a 1024 px com grade de 9. Por isso cada controle usa a grade do seu modelo, rotulada em relação ao K de
       referência (K<sub>gt</sub>), e as posições dos controles não se correspondem entre modelos.`,
     bestK: ' · melhor K',
     outputAlt: (model: string) => `Saída do ${model}`,
@@ -173,9 +172,9 @@ const pt = {
   credits: {
     title: 'Método e créditos',
     body: `Este trabalho parte do <a href="https://generative-refocusing.github.io/" target="_blank" rel="noopener">GenFocus</a>
-    (Generative Refocusing): replicamos o método com os pesos do artigo (<code>official</code>) e depois o modificamos.
+    (Generative Refocusing): replicamos o método com os pesos do artigo e depois o modificamos.
     Usa o <a href="https://github.com/apple/ml-depth-pro" target="_blank" rel="noopener">DepthPro</a>
-    para estimar profundidade. Os checkpoints <code>synth-2gpu</code> e <code>v2-fase2</code> foram treinados pela equipe AKCIT-PIXEL.
+    para estimar profundidade. O Modelo 1 e o Modelo 2 foram treinados pela equipe AKCIT-PIXEL.
     Imagens de avaliação dos datasets públicos em
     <a href="https://huggingface.co/AKCITPixel3" target="_blank" rel="noopener">AKCITPixel3</a>.
     As fotos do vídeo do topo e das seções de refocagem e pipeline são os exemplos do repositório
@@ -212,7 +211,8 @@ const en: typeof pt = {
     beforeAfter: 'Before and after comparison',
     caseN: (n) => `Case ${n}`,
     photoN: (n) => `Photo ${n}`,
-    officialModel: 'official (paper weights)',
+    model1: 'Model 1',
+    model2: 'Model 2',
   },
   nav: {
     label: 'Page sections',
@@ -264,7 +264,7 @@ const en: typeof pt = {
   refocus: {
     title: 'Interactive refocusing',
     lead: 'Click the photo to choose the focal plane. The slider sets the blur strength (K).',
-    leadModels: 'The page opens on v2-fase2, our model; official (the original paper weights) is there for comparison. All models receive the same K but respond differently: our models produce a milder blur than official.',
+    leadModels: 'Pick Model 1 or Model 2, both trained by our team. Both receive the same K but respond differently.',
     placeholder: 'Click-to-refocus is coming soon.',
     stage: 'Refocused photo',
     hint: 'Click to focus',
@@ -308,19 +308,18 @@ const en: typeof pt = {
     steps: [
       {
         title: 'Replicated',
-        body: `We ran the original GenFocus pipeline (DeblurNet → DepthPro → BokehNet) with the paper’s weights, the
-        <code>official</code> checkpoint.`,
+        body: `We ran the original GenFocus pipeline (DeblurNet → DepthPro → BokehNet) with the paper’s weights.`,
       },
       {
         title: 'Modified',
         body: `We fixed the K scale: benchmarks publish K as the circle-of-confusion diameter, while BokehNet is conditioned on the radius.
-        The new protocol, used to evaluate <code>v2-fase2</code>, renders images at a 1024 px long side (<code>official</code> and
-        <code>synth-2gpu</code> were evaluated under the previous protocol, at 544 px). We trained BokehNet on synthetic data (<code>synth-2gpu</code>) and fine-tuned it in
-        a second phase (<code>v2-fase2</code>).`,
+        The new protocol, used to evaluate <b>Model 2</b>, renders images at a 1024 px long side (<b>Model 1</b>
+        was evaluated under the previous protocol, at 544 px). We trained BokehNet on synthetic data (<b>Model 1</b>) and fine-tuned it in
+        a second phase (<b>Model 2</b>).`,
       },
       {
         title: 'Result',
-        body: `<code>v2-fase2</code> is our main model. See the three checkpoints side by side in the
+        body: `<b>Model 2</b> is our main model. See both models side by side in the
         <a href="#models">model comparison</a>.`,
       },
     ],
@@ -338,11 +337,10 @@ const en: typeof pt = {
   },
   models: {
     title: 'BokehNet model comparison',
-    lead: `The same scene across the three checkpoints: <code>v2-fase2</code> and <code>synth-2gpu</code> (ours) and
-      <code>official</code> (the paper’s weights, for comparison). Each model starts at the K that best reproduces the ground truth
+    lead: `The same scene across our two models, <b>Model 1</b> and <b>Model 2</b>. Each model starts at the K that best reproduces the ground truth
       and has its own K slider.`,
-    note: `The models were evaluated under different protocols: <code>official</code> and <code>synth-2gpu</code> at 544 px with an
-      8-value K grid, and <code>v2-fase2</code> at 1024 px with a 9-value grid. Each slider therefore uses its own model’s grid, labeled
+    note: `The models were evaluated under different protocols: Model 1 at 544 px with an
+      8-value K grid, and Model 2 at 1024 px with a 9-value grid. Each slider therefore uses its own model’s grid, labeled
       relative to the reference K (K<sub>gt</sub>), and slider positions do not line up across models.`,
     bestK: ' · best K',
     outputAlt: (model) => `${model} output`,
@@ -363,9 +361,9 @@ const en: typeof pt = {
   credits: {
     title: 'Method and credits',
     body: `This work builds on <a href="https://generative-refocusing.github.io/" target="_blank" rel="noopener">GenFocus</a>
-    (Generative Refocusing): we replicated the method with the paper’s weights (<code>official</code>) and then modified it.
+    (Generative Refocusing): we replicated the method with the paper’s weights and then modified it.
     It uses <a href="https://github.com/apple/ml-depth-pro" target="_blank" rel="noopener">DepthPro</a>
-    for depth estimation. The <code>synth-2gpu</code> and <code>v2-fase2</code> checkpoints were trained by the AKCIT-PIXEL team.
+    for depth estimation. Model 1 and Model 2 were trained by the AKCIT-PIXEL team.
     Evaluation images come from the public datasets at
     <a href="https://huggingface.co/AKCITPixel3" target="_blank" rel="noopener">AKCITPixel3</a>.
     The photos in the header video and in the refocusing and pipeline sections are the examples from the
